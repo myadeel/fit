@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Food Calorie Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-top: 1rem;
+        }
+
+        h1 {
+            color: #2d3436;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .camera-section {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000;
+            margin-bottom: 1rem;
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #captured-image {
+            display: none;
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.8rem 1.2rem;
+            border: none;
+            border-radius: 25px;
+            background: #6c5ce7;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            font-size: 0.9rem;
+            min-width: 140px;
+        }
+
+        button:hover {
+            background: #5b4bc4;
+            transform: translateY(-2px);
+        }
+
+        .result {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .result h3 {
+            color: #2d3436;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .result p {
+            color: #636e72;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin: 0.75rem 0;
+            font-size: 0.9rem;
+        }
+
+        #food-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            -webkit-appearance: none;
+        }
+
+        @media (min-width: 600px) {
+            body {
+                padding: 2rem;
+            }
+            
+            .container {
+                padding: 2rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .camera-section {
+                height: 300px;
+            }
+            
+            #captured-image {
+                height: 300px;
+            }
+            
+            button {
+                padding: 1rem 1.5rem;
+                font-size: 1rem;
+            }
+            
+            .result {
+                padding: 1.5rem;
+                font-size: 1rem;
+            }
+            
+            .result h3 {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .camera-section {
+                height: 200px;
+            }
+            
+            #captured-image {
+                height: 200px;
+            }
+            
+            button {
+                width: 100%;
+                min-width: unset;
+            }
+            
+            .controls {
+                gap: 0.5rem;
+            }
+            
+            #food-input {
+                font-size: 0.85rem;
+                padding: 0.6rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            .container {
+                padding: 1rem;
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Same HTML structure as previous version -->
+    <h1>Food Calorie Calculator 📸</h1>
+    <div class="container">
+        <div class="camera-section">
+            <video id="video" autoplay></video>
+            <img id="captured-image" alt="Captured food image">
+        </div>
+        <div class="controls">
+            <button id="capture-btn">Capture Food Photo</button>
+            <button id="retake-btn" class="hidden">Retake Photo</button>
+        </div>
+        <input type="text" id="food-input" class="hidden" placeholder="Describe your food (e.g., '1 large apple')">
+        <div class="controls">
+            <button id="analyze-btn" class="hidden">Analyze Nutrition</button>
+        </div>
+        <div class="result hidden" id="result"></div>
+        <div class="error hidden" id="error"></div>
+    </div>
+
+    <!-- Same JavaScript as previous version -->
+    <script>
+        // Nutritionix API Configuration
+        const APP_ID = 'YOUR_APP_ID';
+        const API_KEY = 'YOUR_API_KEY';
+        const NUTRITIONIX_ENDPOINT = 'https://trackapi.nutritionix.com/v2/natural/nutrients';
+
+        // DOM Elements
+        const video = document.getElementById('video');
+        const captureBtn = document.getElementById('capture-btn');
+        const retakeBtn = document.getElementById('retake-btn');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const capturedImage = document.getElementById('captured-image');
+        const foodInput = document.getElementById('food-input');
+        const resultDiv = document.getElementById('result');
+        const errorDiv = document.getElementById('error');
+
+        // Initialize Camera
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                showError('Camera access denied. Please enable camera permissions.');
+            }
+        }
+
+        // Capture Image
+        function captureImage() {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            capturedImage.src = canvas.toDataURL('image/png');
+            capturedImage.style.display = 'block';
+            video.style.display = 'none';
+            captureBtn.classList.add('hidden');
+            retakeBtn.classList.remove('hidden');
+            foodInput.classList.remove('hidden');
+            analyzeBtn.classList.remove('hidden');
+        }
+
+        // Retake Photo
+        function retakePhoto() {
+            capturedImage.style.display = 'none';
+            video.style.display = 'block';
+            captureBtn.classList.remove('hidden');
+            retakeBtn.classList.add('hidden');
+            foodInput.classList.add('hidden');
+            analyzeBtn.classList.add('hidden');
+            resultDiv.classList.add('hidden');
+            foodInput.value = '';
+        }
+
+        // Get Nutrition Data
+        async function getNutritionData() {
+            const query = foodInput.value.trim();
+            if (!query) {
+                showError('Please describe your food before analyzing');
+                return;
+            }
+
+            try {
+                const response = await fetch(NUTRITIONIX_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-app-id': APP_ID,
+                        'x-app-key': API_KEY,
+                        'x-remote-user-id': '0'
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        timezone: 'US/Eastern'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.foods && data.foods.length > 0) {
+                    displayNutrition(data.foods);
+                } else {
+                    showError('No nutrition data found for this food');
+                }
+            } catch (err) {
+                showError('Failed to fetch nutrition data. Please try again.');
+            }
+        }
+
+        // Display Nutrition Results
+        function displayNutrition(foods) {
+            let totalCalories = 0;
+            let html = `<h3>Nutrition Analysis 🍏</h3>`;
+
+            foods.forEach(food => {
+                totalCalories += food.nf_calories;
+                html += `
+                    <div style="margin-bottom: 1rem;">
+                        <p>Food: <strong>${food.food_name}</strong></p>
+                        <p>Serving: <strong>${food.serving_qty} ${food.serving_unit}</strong></p>
+                        <p>Calories: <strong>${food.nf_calories} kcal</strong></p>
+                        <p>Protein: <strong>${food.nf_protein}g</strong></p>
+                        <p>Carbs: <strong>${food.nf_total_carbohydrate}g</strong></p>
+                        <p>Fat: <strong>${food.nf_total_fat}g</strong></p>
+                    </div>
+                `;
+            });
+
+            html += `<p style="margin-top: 1rem;">Total Calories: <strong>${totalCalories} kcal</strong></p>`;
+            resultDiv.innerHTML = html;
+            resultDiv.classList.remove('hidden');
+        }
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 3000);
+        }
+
+        // Event Listeners
+        captureBtn.addEventListener('click', captureImage);
+        retakeBtn.addEventListener('click', retakePhoto);
+        analyzeBtn.addEventListener('click', getNutritionData);
+
+        // Initialize app
+        initCamera();
+    </script>
+</body>
+</html>
