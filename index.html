@@ -1,479 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NutriScan - AI Food Analysis</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6366F1;
-            --primary-dark: #4F46E5;
-            --background: #F8FAFC;
-            --card-bg: #FFFFFF;
-            --text: #1E293B;
-            --text-light: #64748B;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background: var(--background);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1rem;
-            line-height: 1.5;
-        }
-
-        .container {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 600px;
-            border-radius: 1.5rem;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-        }
-
-        h1 {
-            color: var(--text);
-            text-align: center;
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .camera-section {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1/1;
-            border-radius: 1rem;
-            overflow: hidden;
-            background: #0F172A;
-            margin-bottom: 1.5rem;
-            border: 2px solid #E2E8F0;
-        }
-
-        #video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        #captured-image {
-            display: none;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 1rem;
-        }
-
-        .controls {
-            display: grid;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        button {
-            padding: 1rem 1.5rem;
-            border: none;
-            border-radius: 0.75rem;
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        button.secondary {
-            background: #F1F5F9;
-            color: var(--text);
-        }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 1rem;
-        }
-
-        #food-input {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid #E2E8F0;
-            border-radius: 0.75rem;
-            font-size: 1rem;
-            transition: border-color 0.2s ease;
-            background: var(--card-bg);
-        }
-
-        #food-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .result {
-            background: var(--background);
-            padding: 1.5rem;
-            border-radius: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .food-item {
-            padding: 1rem;
-            background: var(--card-bg);
-            border-radius: 0.75rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-        }
-
-        .nutrition-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .nutrition-item {
-            text-align: center;
-            padding: 0.75rem;
-            background: var(--background);
-            border-radius: 0.75rem;
-        }
-
-        .nutrition-item span {
-            display: block;
-            font-size: 0.9em;
-            color: var(--text-light);
-            margin-bottom: 0.25rem;
-        }
-
-        .loader {
-            display: none;
-            border: 3px solid #F1F5F9;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .error {
-            background: #FEE2E2;
-            color: #DC2626;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            margin: 1rem 0;
-            display: none;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .floating-label {
-            position: absolute;
-            top: -10px;
-            left: 12px;
-            background: var(--card-bg);
-            padding: 0 4px;
-            font-size: 0.85em;
-            color: var(--text-light);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 1rem;
-                border-radius: 1rem;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            button {
-                padding: 0.875rem;
-                font-size: 0.9rem;
-            }
-
-            .nutrition-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calorie Estimator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    video, img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    button, input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #result {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-    <h1>🍎 NutriScan <span style="font-weight: 400; color: var(--text-light);">| AI Nutrition</span></h1>
-    
-    <div class="container">
-        <div class="camera-section">
-            <video id="video" autoplay></video>
-            <img id="captured-image" alt="Captured food image">
-        </div>
+  <div class="container">
+    <h2>Take Meal Photo</h2>
+    <video id="camera" autoplay playsinline></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <button onclick="capturePhoto()">Capture & Analyze</button>
+    <div id="result"></div>
+  </div>
 
-        <div class="controls">
-            <button id="capture-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                </svg>
-                Capture
-            </button>
-            <button id="retake-btn" class="hidden secondary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="23 4 23 10 17 10"></polyline>
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                </svg>
-                Retake
-            </button>
-        </div>
+  <script>
+    const video = document.getElementById("camera");
+    const canvas = document.getElementById("canvas");
+    const resultDiv = document.getElementById("result");
 
-        <div class="input-group hidden">
-            <input type="text" id="food-input" placeholder=" ">
-            <div class="floating-label">Describe your meal</div>
-        </div>
+    // Access back camera on mobile
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert("Camera access denied or not available.");
+        console.error(err);
+      });
 
-        <button id="analyze-btn" class="hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
-            </svg>
-            Analyze Meal
-        </button>
+    async function capturePhoto() {
+      const context = canvas.getContext("2d");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        <div class="loader" id="loader"></div>
-        <div class="error hidden" id="error"></div>
-        <div class="result hidden" id="result"></div>
-    </div>
+      const imageDataURL = canvas.toDataURL("image/jpeg");
+      const base64Image = imageDataURL.split(",")[1];
 
-    <script>
-        // Nutritionix API Configuration
-        const APP_ID = '5b9ef3f3'; // Replace with your credentials
-        const API_KEY = '0e3af2a4dce94d4d61f0209b7e91b108';
-        const NUTRITIONIX_IMAGE_API = 'https://trackapi.nutritionix.com/v2/image/nutrition';
-        const NUTRITIONIX_TEXT_API = 'https://trackapi.nutritionix.com/v2/natural/nutrients';
+      resultDiv.innerText = "Analyzing...";
 
-        // DOM Elements
-        const video = document.getElementById('video');
-        const captureBtn = document.getElementById('capture-btn');
-        const retakeBtn = document.getElementById('retake-btn');
-        const analyzeBtn = document.getElementById('analyze-btn');
-        const capturedImage = document.getElementById('captured-image');
-        const foodInput = document.getElementById('food-input');
-        const resultDiv = document.getElementById('result');
-        const errorDiv = document.getElementById('error');
-        const loader = document.getElementById('loader');
-        const inputGroup = document.querySelector('.input-group');
-
-        let capturedImageData = null;
-
-        // Initialize Camera
-        async function initCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
-            } catch (err) {
-                showError('Camera access denied. Please enable camera permissions.');
-            }
-        }
-
-        // Capture Image
-        function captureImage() {
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            
-            capturedImageData = canvas.toDataURL('image/jpeg', 0.8);
-            capturedImage.src = capturedImageData;
-            capturedImage.style.display = 'block';
-            video.style.display = 'none';
-            
-            captureBtn.classList.add('hidden');
-            retakeBtn.classList.remove('hidden');
-            analyzeBtn.classList.remove('hidden');
-            inputGroup.classList.remove('hidden');
-            
-            analyzeFood();
-        }
-
-        // Main analysis function
-        async function analyzeFood() {
-            loader.style.display = 'block';
-            errorDiv.classList.add('hidden');
-            resultDiv.classList.add('hidden');
-
-            try {
-                let analysis;
-                
-                if (foodInput.value.trim()) {
-                    analysis = await analyzeWithText();
-                } else {
-                    analysis = await analyzeWithImage();
-                }
-
-                if (analysis?.foods?.length) {
-                    displayNutrition(analysis.foods);
-                } else {
-                    showError('Analysis failed. Try adding a description.');
-                }
-            } catch (err) {
-                showError(err.message || 'Analysis failed. Please try again.');
-            } finally {
-                loader.style.display = 'none';
-            }
-        }
-
-        // Image analysis using Nutritionix API
-        async function analyzeWithImage() {
-            const blob = dataURLtoBlob(capturedImageData);
-            const formData = new FormData();
-            formData.append('image', blob, 'food.jpg');
-
-            const response = await fetch(NUTRITIONIX_IMAGE_API, {
-                method: 'POST',
-                headers: {
-                    'x-app-id': APP_ID,
-                    'x-app-key': API_KEY,
-                },
-                body: formData
-            });
-
-            if (!response.ok) throw new Error('Image analysis failed');
-            return response.json();
-        }
-
-        // Text analysis fallback
-        async function analyzeWithText() {
-            const response = await fetch(NUTRITIONIX_TEXT_API, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-app-id': APP_ID,
-                    'x-app-key': API_KEY,
-                },
-                body: JSON.stringify({
-                    query: foodInput.value.trim(),
-                    timezone: 'US/Eastern'
-                })
-            });
-
-            if (!response.ok) throw new Error('Text analysis failed');
-            return response.json();
-        }
-
-        // Display results
-        function displayNutrition(foods) {
-            let totalCalories = foods.reduce((sum, food) => sum + (food.nf_calories || 0), 0);
-            
-            const html = `
-                <h3 style="margin-bottom: 1rem; color: var(--text);">Nutrition Breakdown</h3>
-                ${foods.map(food => `
-                    <div class="food-item">
-                        <h4 style="margin-bottom: 0.5rem; color: var(--text);">${food.food_name}</h4>
-                        <p style="color: var(--text-light); margin-bottom: 0.75rem;">${food.serving_qty} ${food.serving_unit}</p>
-                        <div class="nutrition-grid">
-                            <div class="nutrition-item">
-                                <span>Calories</span>
-                                ${food.nf_calories || 0} kcal
-                            </div>
-                            <div class="nutrition-item">
-                                <span>Protein</span>
-                                ${food.nf_protein || 0}g
-                            </div>
-                            <div class="nutrition-item">
-                                <span>Carbs</span>
-                                ${food.nf_total_carbohydrate || 0}g
-                            </div>
-                            <div class="nutrition-item">
-                                <span>Fat</span>
-                                ${food.nf_total_fat || 0}g
-                            </div>
-                        </div>
-                    </div>
-                `).join('')}
-                <div class="food-item" style="margin-top: 1.5rem;">
-                    <div class="nutrition-item" style="background: var(--primary); color: white;">
-                        <span>Total Calories</span>
-                        ${totalCalories} kcal
-                    </div>
-                </div>
-            `;
-
-            resultDiv.innerHTML = html;
-            resultDiv.classList.remove('hidden');
-        }
-
-        // Helper functions
-        function dataURLtoBlob(dataURL) {
-            const byteString = atob(dataURL.split(',')[1]);
-            const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-            
-            for (let i = 0; i < byteString.length; i++) {
-                ia[i] = byteString.charCodeAt(i);
-            }
-            
-            return new Blob([ab], { type: mimeString });
-        }
-
-        function showError(message) {
-            errorDiv.textContent = message;
-            errorDiv.classList.remove('hidden');
-            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
-        }
-
-        // Event Listeners
-        captureBtn.addEventListener('click', captureImage);
-        retakeBtn.addEventListener('click', () => {
-            capturedImageData = null;
-            foodInput.value = '';
-            inputGroup.classList.add('hidden');
-            resultDiv.classList.add('hidden');
-            video.style.display = 'block';
-            capturedImage.style.display = 'none';
-            captureBtn.classList.remove('hidden');
-            retakeBtn.classList.add('hidden');
-            analyzeBtn.classList.add('hidden');
+      try {
+        const response = await fetch("https://trackapi.nutritionix.com/v2/image", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-app-id": "5b9ef3f3",
+            "x-app-key": "0e3af2a4dce94d4d61f0209b7e91b108"
+          },
+          body: JSON.stringify({ image: base64Image })
         });
 
-        analyzeBtn.addEventListener('click', analyzeFood);
-        foodInput.addEventListener('input', () => {
-            document.querySelector('.floating-label').style.opacity = foodInput.value ? 1 : 0;
-        });
+        const data = await response.json();
 
-        // Initialize app
-        initCamera();
-    </script>
+        if (data && data.foods && data.foods.length > 0) {
+          let output = "";
+          data.foods.forEach(food => {
+            output += `🍽️ ${food.food_name}\nCalories: ${food.nf_calories} kcal\n\n`;
+          });
+          resultDiv.innerText = output;
+        } else {
+          resultDiv.innerText = "No recognizable food items found.";
+        }
+      } catch (err) {
+        console.error(err);
+        resultDiv.innerText = "An error occurred while analyzing the image.";
+      }
+    }
+  </script>
 </body>
 </html>
